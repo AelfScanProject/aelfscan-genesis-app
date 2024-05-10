@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>AElfScan.GenesisApp</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\AElfScan.GenesisApp\AElfScan.GenesisApp.csproj" />
+      <ProjectReference Include="..\AElfScan.GenesisApp.Orleans.TestBase\AElfScan.GenesisApp.Orleans.TestBase.csproj" />
+      <ProjectReference Include="..\AElfScan.GenesisApp.TestBase\AElfScan.GenesisApp.TestBase.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AeFinder.App" Version="0.0.2" />
+        <PackageReference Include="AElf.EntityMapping.Elasticsearch" Version="1.0.0-rc9.5" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+        <PackageReference Include="coverlet.collector" Version="3.2.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Shouldly" Version="4.1.0" />
+    </ItemGroup>
+</Project>

@@ -7,7 +7,7 @@
         <Configuration>
           <Format>cobertura</Format>
           <Exclude>[xunit.*]*,[*Tests]*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
-          <ExcludeByFile>**/test/**/*.cs,**/src/AeFinder.GenesisApp/Generated/*.*</ExcludeByFile>
+          <ExcludeByFile>**/test/**/*.cs,**/src/AElfScan.GenesisApp/Generated/*.*</ExcludeByFile>
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute</ExcludeByAttribute>
           <SingleHit>false</SingleHit>
         </Configuration>

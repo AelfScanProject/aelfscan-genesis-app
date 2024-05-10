@@ -7,13 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CA9AC87F-097
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{04DBDB01-70F4-4E06-B468-8F87850B22BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeFinder.GenesisApp", "src\AeFinder.GenesisApp\AeFinder.GenesisApp.csproj", "{EEC6D30D-2A9F-4757-8BE0-6E6105185383}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElfScan.GenesisApp", "src\AElfScan.GenesisApp\AElfScan.GenesisApp.csproj", "{EEC6D30D-2A9F-4757-8BE0-6E6105185383}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeFinder.GenesisApp.Orleans.TestBase", "test\AeFinder.GenesisApp.Orleans.TestBase\AeFinder.GenesisApp.Orleans.TestBase.csproj", "{05188D50-7A2D-46E6-A008-C58046B65CE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElfScan.GenesisApp.Orleans.TestBase", "test\AElfScan.GenesisApp.Orleans.TestBase\AElfScan.GenesisApp.Orleans.TestBase.csproj", "{05188D50-7A2D-46E6-A008-C58046B65CE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeFinder.GenesisApp.Tests", "test\AeFinder.GenesisApp.Tests\AeFinder.GenesisApp.Tests.csproj", "{EEC35B8E-028E-4B1B-A9A0-FE1B0F5C0CAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElfScan.GenesisApp.Tests", "test\AElfScan.GenesisApp.Tests\AElfScan.GenesisApp.Tests.csproj", "{EEC35B8E-028E-4B1B-A9A0-FE1B0F5C0CAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeFinder.GenesisApp.TestBase", "test\AeFinder.GenesisApp.TestBase\AeFinder.GenesisApp.TestBase.csproj", "{39FAC7D6-7726-415B-82D0-BBF126C4F4F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElfScan.GenesisApp.TestBase", "test\AElfScan.GenesisApp.TestBase\AElfScan.GenesisApp.TestBase.csproj", "{39FAC7D6-7726-415B-82D0-BBF126C4F4F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

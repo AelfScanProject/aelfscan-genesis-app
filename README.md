@@ -1,1 +1,1 @@
-# aefinder-genesis-app
+# AElfScan-genesis-app
