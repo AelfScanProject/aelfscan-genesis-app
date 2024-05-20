@@ -62,12 +62,12 @@ public class QueryTests : GenesisAppTestBase
         await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper, new GetContractRegistrationDto()
         {
             ChainId = ChainId
-        }).ShouldThrowAsync<ArgumentException>();
+        }).ShouldThrowAsync<ArgumentOutOfRangeException>();
         
         await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper, new GetContractRegistrationDto()
         {
             CodeHash = "CodeHash"
-        }).ShouldThrowAsync<ArgumentException>();
+        }).ShouldThrowAsync<ArgumentOutOfRangeException>();
     }
 
     [Fact]
