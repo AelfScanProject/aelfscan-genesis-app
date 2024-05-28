@@ -8,11 +8,12 @@ namespace AElfScan.GenesisApp.GraphQL;
 
 public class Query
 {
-    public static async Task<List<ContractInfoDto>> ContractInfo(
+    public static async Task<ContractInfoResultDto> ContractList(
         [FromServices] IReadOnlyRepository<Entities.ContractInfo> repository,
         [FromServices] IObjectMapper objectMapper, GetContractInfoDto input)
     {
         input.Validate();
+
 
         var queryable = await repository.GetQueryableAsync();
         if (!input.ChainId.IsNullOrWhiteSpace())
@@ -30,6 +31,17 @@ public class Query
             queryable = queryable.Where(o => o.Author == input.Author);
         }
 
+        if (input.OrderBy == "BlockTime")
+        {
+            queryable = input.Sort.ToLower() == SortType.Asc.ToString().ToLower()
+                ? queryable.OrderBy(o => o.Metadata.Block.BlockTime)
+                : queryable.OrderByDescending(o => o.Metadata.Block.BlockHeight);
+        }
+        else
+        {
+            queryable = queryable.OrderByDescending(o => o.Metadata.Block.BlockTime);
+        }
+
         if (!input.AddressList.IsNullOrEmpty())
         {
             var predicates = input.AddressList.Select(s =>
@@ -39,11 +51,13 @@ public class Query
         }
 
 
-        // queryable = queryable.OrderBy(o => o.Metadata.Block.BlockHeight);
-
+        var contractInfoResultDto = new ContractInfoResultDto();
+        contractInfoResultDto.TotalCount = queryable.Count();
         var result = queryable.Skip(input.SkipCount)
             .Take(input.MaxResultCount).ToList();
-        return objectMapper.Map<List<Entities.ContractInfo>, List<ContractInfoDto>>(result);
+        contractInfoResultDto.Items = objectMapper.Map<List<Entities.ContractInfo>, List<ContractInfoDto>>(result);
+
+        return contractInfoResultDto;
     }
 
     public static async Task<List<ContractRecordDto>> ContractRecord(

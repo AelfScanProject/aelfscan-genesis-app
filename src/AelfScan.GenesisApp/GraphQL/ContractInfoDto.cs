@@ -4,6 +4,12 @@ using AeFinder.Sdk.Dtos;
 
 namespace AElfScan.GenesisApp.GraphQL;
 
+public class ContractInfoResultDto
+{
+    public long TotalCount { get; set; }
+    public List<ContractInfoDto> Items { get; set; }
+}
+
 public class ContractInfoDto : AeFinderEntityDto
 {
     public string Address { get; set; }
