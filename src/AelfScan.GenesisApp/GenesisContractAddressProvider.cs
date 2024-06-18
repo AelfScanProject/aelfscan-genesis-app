@@ -12,7 +12,7 @@ public class GenesisContractAddressProvider : IGenesisContractAddressProvider, I
     private readonly Dictionary<string, string> _contractAddresses = new()
     {
         { "AELF", "pykr77ft9UUKJZLVq15wCH8PinBSjVRQ12sD1Ayq92mKFsJ1i" },
-        { "tDVV", "2dtnkWDyJJXeDRcREhKSZHrYdDGMbn3eus5KYpXonfoTygFHZm" }
+        { "tDVW", "2UKQnHcQvhBT6X6ULtfnuh3b9PVRvVMEroHHkcK4YfcoH1Z1x2" }
     };
 
     public string GetContractAddress(string chainId)
