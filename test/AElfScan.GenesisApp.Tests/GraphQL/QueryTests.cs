@@ -37,7 +37,7 @@ public class QueryTests : GenesisAppTestBase
     [Fact]
     public async Task ContractInfo_WrongMaxResultCount_Test()
     {
-        await Query.ContractInfo(_contractInfoRepository, _objectMapper, new GetContractInfoDto
+        await Query.ContractList(_contractInfoRepository, _objectMapper, new GetContractInfoDto
         {
             ChainId = ChainId,
             Address = TestAddress.ToBase58(),
@@ -62,12 +62,12 @@ public class QueryTests : GenesisAppTestBase
         await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper, new GetContractRegistrationDto()
         {
             ChainId = ChainId
-        }).ShouldThrowAsync<ArgumentException>();
+        }).ShouldThrowAsync<ArgumentOutOfRangeException>();
         
         await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper, new GetContractRegistrationDto()
         {
             CodeHash = "CodeHash"
-        }).ShouldThrowAsync<ArgumentException>();
+        }).ShouldThrowAsync<ArgumentOutOfRangeException>();
     }
 
     [Fact]
@@ -80,31 +80,31 @@ public class QueryTests : GenesisAppTestBase
         await DeployContractAsync(author1, address1,"code1", "hash1");
         await DeployContractAsync(author2, address2,"code2", "hash2");
         
-        var contractInfo = await Query.ContractInfo(_contractInfoRepository, _objectMapper, new GetContractInfoDto
+        var contractInfo = await Query.ContractList(_contractInfoRepository, _objectMapper, new GetContractInfoDto
         {
             ChainId = ChainId,
             SkipCount = 0,
             MaxResultCount = 10
         });
-        contractInfo.Count.ShouldBe(2);
+        contractInfo.Items.Count().ShouldBe(2);
         
-        contractInfo = await Query.ContractInfo(_contractInfoRepository, _objectMapper, new GetContractInfoDto
+        contractInfo = await Query.ContractList(_contractInfoRepository, _objectMapper, new GetContractInfoDto
         {
             ChainId = ChainId,
             Address = address1,
             SkipCount = 0,
             MaxResultCount = 10
         });
-        contractInfo.Count.ShouldBe(1);
+        contractInfo.Items.Count().ShouldBe(1);
         
-        contractInfo = await Query.ContractInfo(_contractInfoRepository, _objectMapper, new GetContractInfoDto
+        contractInfo = await Query.ContractList(_contractInfoRepository, _objectMapper, new GetContractInfoDto
         {
             ChainId = ChainId,
             Author = author1,
             SkipCount = 0,
             MaxResultCount = 10
         });
-        contractInfo.Count.ShouldBe(1);
+        contractInfo.Items.Count().ShouldBe(1);
         
         var contractRecord = await Query.ContractRecord(_contractRecordRepository, _objectMapper, new GetContractRecordDto()
         {

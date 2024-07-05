@@ -12,7 +12,7 @@ using Xunit;
 
 namespace AElfScan.GenesisApp.Processors;
 
-public class ProcessorTests: GenesisAppTestBase
+public class ProcessorTests : GenesisAppTestBase
 {
     private readonly ContractDeployedProcessor _contractDeployedProcessor;
     private readonly CodeCheckRequiredProcessor _codeCheckRequiredProcessor;
@@ -20,7 +20,7 @@ public class ProcessorTests: GenesisAppTestBase
     private readonly AuthorUpdatedProcessor _authorUpdatedProcessor;
     private readonly ContractProposedProcessor _contractProposedProcessor;
     private readonly IObjectMapper _objectMapper;
-    
+
     private readonly IReadOnlyRepository<AElfScan.GenesisApp.Entities.ContractInfo> _contractInfoRepository;
     private readonly IReadOnlyRepository<ContractRegistration> _contractRegistrationRepository;
     private readonly IReadOnlyRepository<ContractRecord> _contractRecordRepository;
@@ -51,12 +51,13 @@ public class ProcessorTests: GenesisAppTestBase
         var logEventContext = GenerateLogEventContext(contractProposedEvent);
         await _contractProposedProcessor.ProcessAsync(logEventContext);
         await SaveDataAsync();
-        
+
         var contractProposeInfos = (await _contractProposeInfoRepository.GetQueryableAsync()).ToList();
         contractProposeInfos.Count.ShouldBe(1);
         contractProposeInfos[0].Proposer.ShouldBe(FromAddress);
-        contractProposeInfos[0].ProposedContractInputHash.ShouldBe(contractProposedEvent.ProposedContractInputHash.ToHex());
-        
+        contractProposeInfos[0].ProposedContractInputHash
+            .ShouldBe(contractProposedEvent.ProposedContractInputHash.ToHex());
+
         var codeCheckRequiredEvent = new CodeCheckRequired
         {
             Category = 1,
@@ -67,9 +68,9 @@ public class ProcessorTests: GenesisAppTestBase
         };
         logEventContext = GenerateLogEventContext(codeCheckRequiredEvent);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-        
+
         var contractRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
             new GetContractRegistrationDto
             {
@@ -80,8 +81,10 @@ public class ProcessorTests: GenesisAppTestBase
         contractRegistrations[0].ContractCategory.ShouldBe(codeCheckRequiredEvent.Category);
         contractRegistrations[0].Code.ShouldBe(codeCheckRequiredEvent.Code.ToBase64());
         contractRegistrations[0].ContractType.ShouldBe(ContractType.UserContract);
-        contractRegistrations[0].ProposedContractInputHash.ShouldBe(codeCheckRequiredEvent.ProposedContractInputHash.ToHex());
-        contractRegistrations[0].CodeHash.ShouldBe(HashHelper.ComputeFrom(codeCheckRequiredEvent.Code.ToByteArray()).ToHex());
+        contractRegistrations[0].ProposedContractInputHash
+            .ShouldBe(codeCheckRequiredEvent.ProposedContractInputHash.ToHex());
+        contractRegistrations[0].CodeHash
+            .ShouldBe(HashHelper.ComputeFrom(codeCheckRequiredEvent.Code.ToByteArray()).ToHex());
         contractRegistrations[0].Metadata.ChainId.ShouldBe(logEventContext.ChainId);
 
         var contractDeployedEvent = new ContractDeployed
@@ -93,14 +96,15 @@ public class ProcessorTests: GenesisAppTestBase
             ContractVersion = "1.0.0",
             Version = 1,
         };
-        
+
         logEventContext = GenerateLogEventContext(contractDeployedEvent);
         await _contractDeployedProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-    
+
         var contractInfoId = IdGenerateHelper.GetId(logEventContext.ChainId, contractDeployedEvent.Address.ToBase58());
-        var contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o=>o.Id==contractInfoId).ToList()[0];
+        var contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId)
+            .ToList()[0];
         contractInfo.Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractInfo.CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
         contractInfo.NameHash.ShouldBe(contractDeployedEvent.Name.ToHex());
@@ -111,11 +115,13 @@ public class ProcessorTests: GenesisAppTestBase
         contractInfo.ContractCategory.ShouldBe(codeCheckRequiredEvent.Category);
         contractInfo.ContractType.ShouldBe(ContractType.UserContract);
 
-        var contractInfos = await Query.ContractInfo(_contractInfoRepository, _objectMapper, new GetContractInfoDto
+        var contractInfos = Query.ContractList(_contractInfoRepository, _objectMapper, new GetContractInfoDto
         {
             ChainId = ChainId,
             Address = TestAddress.ToBase58()
-        });
+        }).Result.Items;
+
+
         contractInfos.Count.ShouldBe(1);
         contractInfos[0].Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractInfos[0].CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
@@ -126,12 +132,13 @@ public class ProcessorTests: GenesisAppTestBase
         contractInfos[0].Metadata.ChainId.ShouldBe(logEventContext.ChainId);
         contractInfos[0].ContractCategory.ShouldBe(codeCheckRequiredEvent.Category);
         contractInfos[0].ContractType.ShouldBe(ContractType.UserContract);
-        
-        var contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper, new GetContractRecordDto
-        {
-            ChainId = ChainId,
-            Address = TestAddress.ToBase58()
-        });
+
+        var contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper,
+            new GetContractRecordDto
+            {
+                ChainId = ChainId,
+                Address = TestAddress.ToBase58()
+            });
         contractRecords.Count.ShouldBe(1);
         contractRecords[0].ContractInfo.Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractRecords[0].ContractInfo.CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
@@ -152,11 +159,12 @@ public class ProcessorTests: GenesisAppTestBase
         logEventContext = GenerateLogEventContext(contractProposedEventUpdate);
         await _contractProposedProcessor.ProcessAsync(logEventContext);
         await SaveDataAsync();
-        
+
         contractProposeInfos = (await _contractProposeInfoRepository.GetQueryableAsync()).ToList();
         contractProposeInfos.Count.ShouldBe(2);
         contractProposeInfos[1].Proposer.ShouldBe(FromAddress);
-        contractProposeInfos[1].ProposedContractInputHash.ShouldBe(contractProposedEventUpdate.ProposedContractInputHash.ToHex());
+        contractProposeInfos[1].ProposedContractInputHash
+            .ShouldBe(contractProposedEventUpdate.ProposedContractInputHash.ToHex());
 
         var codeCheckRequiredEventUpdate = new CodeCheckRequired
         {
@@ -168,9 +176,9 @@ public class ProcessorTests: GenesisAppTestBase
         };
         logEventContext = GenerateLogEventContext(codeCheckRequiredEventUpdate);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-        
+
         contractRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
             new GetContractRegistrationDto
             {
@@ -181,15 +189,18 @@ public class ProcessorTests: GenesisAppTestBase
         contractRegistrations[0].ContractCategory.ShouldBe(codeCheckRequiredEventUpdate.Category);
         contractRegistrations[0].Code.ShouldBe(codeCheckRequiredEventUpdate.Code.ToBase64());
         contractRegistrations[0].ContractType.ShouldBe(ContractType.UserContract);
-        contractRegistrations[0].ProposedContractInputHash.ShouldBe(codeCheckRequiredEventUpdate.ProposedContractInputHash.ToHex());
-        contractRegistrations[0].CodeHash.ShouldBe(HashHelper.ComputeFrom(codeCheckRequiredEventUpdate.Code.ToByteArray()).ToHex());
+        contractRegistrations[0].ProposedContractInputHash
+            .ShouldBe(codeCheckRequiredEventUpdate.ProposedContractInputHash.ToHex());
+        contractRegistrations[0].CodeHash
+            .ShouldBe(HashHelper.ComputeFrom(codeCheckRequiredEventUpdate.Code.ToByteArray()).ToHex());
         contractRegistrations[0].Metadata.ChainId.ShouldBe(logEventContext.ChainId);
-        
+
         contractProposeInfos = (await _contractProposeInfoRepository.GetQueryableAsync()).ToList();
         contractProposeInfos.Count.ShouldBe(2);
         contractProposeInfos[1].Proposer.ShouldBe(FromAddress);
-        contractProposeInfos[1].ProposedContractInputHash.ShouldBe(codeCheckRequiredEventUpdate.ProposedContractInputHash.ToHex());
-        
+        contractProposeInfos[1].ProposedContractInputHash
+            .ShouldBe(codeCheckRequiredEventUpdate.ProposedContractInputHash.ToHex());
+
         var codeUpdatedEvent = new CodeUpdated
         {
             Address = TestAddress,
@@ -198,13 +209,14 @@ public class ProcessorTests: GenesisAppTestBase
             ContractVersion = "1.1.0",
             Version = 2
         };
-        
+
         logEventContext = GenerateLogEventContext(codeUpdatedEvent);
         await _codeUpdatedProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-        
-        contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o=>o.Id==contractInfoId).ToList()[0];
+
+        contractInfo =
+            (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId).ToList()[0];
         contractInfo.Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractInfo.CodeHash.ShouldBe(codeUpdatedEvent.NewCodeHash.ToHex());
         contractInfo.NameHash.ShouldBe(contractDeployedEvent.Name.ToHex());
@@ -214,7 +226,7 @@ public class ProcessorTests: GenesisAppTestBase
         contractInfo.Metadata.ChainId.ShouldBe(logEventContext.ChainId);
         contractInfo.ContractCategory.ShouldBe(codeCheckRequiredEvent.Category);
         contractInfo.ContractType.ShouldBe(ContractType.UserContract);
-        
+
         contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper, new GetContractRecordDto
         {
             ChainId = ChainId,
@@ -237,7 +249,7 @@ public class ProcessorTests: GenesisAppTestBase
     public async Task DeploySystemContract_Test()
     {
         var code = ByteString.CopyFromUtf8("code");
-    
+
         // Deploy system contract
         var contractDeployedEvent = new ContractDeployed
         {
@@ -249,11 +261,11 @@ public class ProcessorTests: GenesisAppTestBase
             Version = 1
         };
         var logEventContext = GenerateLogEventContext(contractDeployedEvent);
-        
+
         await _contractDeployedProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-        
+
         var contractRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
             new GetContractRegistrationDto
             {
@@ -267,9 +279,10 @@ public class ProcessorTests: GenesisAppTestBase
         contractRegistrations[0].ProposedContractInputHash.ShouldBeNull();
         contractRegistrations[0].CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
         contractRegistrations[0].Metadata.ChainId.ShouldBe(logEventContext.ChainId);
-    
+
         var contractInfoId = IdGenerateHelper.GetId(logEventContext.ChainId, contractDeployedEvent.Address.ToBase58());
-        var contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o=>o.Id==contractInfoId).ToList()[0];
+        var contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId)
+            .ToList()[0];
         contractInfo.Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractInfo.CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
         contractInfo.NameHash.ShouldBe(contractDeployedEvent.Name.ToHex());
@@ -279,12 +292,12 @@ public class ProcessorTests: GenesisAppTestBase
         contractInfo.Metadata.ChainId.ShouldBe(logEventContext.ChainId);
         contractInfo.ContractCategory.ShouldBe(1);
         contractInfo.ContractType.ShouldBe(ContractType.SystemContract);
-    
-        var contractInfos = await Query.ContractInfo(_contractInfoRepository, _objectMapper, new GetContractInfoDto
+
+        var contractInfos = Query.ContractList(_contractInfoRepository, _objectMapper, new GetContractInfoDto
         {
             ChainId = ChainId,
             Address = TestAddress.ToBase58()
-        });
+        }).Result.Items;
         contractInfos.Count.ShouldBe(1);
         contractInfos[0].Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractInfos[0].CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
@@ -295,12 +308,13 @@ public class ProcessorTests: GenesisAppTestBase
         contractInfos[0].Metadata.ChainId.ShouldBe(logEventContext.ChainId);
         contractInfos[0].ContractCategory.ShouldBe(1);
         contractInfos[0].ContractType.ShouldBe(ContractType.SystemContract);
-        
-        var contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper, new GetContractRecordDto
-        {
-            ChainId = ChainId,
-            Address = TestAddress.ToBase58()
-        });
+
+        var contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper,
+            new GetContractRecordDto
+            {
+                ChainId = ChainId,
+                Address = TestAddress.ToBase58()
+            });
         contractRecords.Count.ShouldBe(1);
         contractRecords[0].ContractInfo.Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractRecords[0].ContractInfo.CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
@@ -328,9 +342,9 @@ public class ProcessorTests: GenesisAppTestBase
         };
         var logEventContext = GenerateLogEventContext(codeCheckRequiredEvent);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-        
+
         var contractRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
             new GetContractRegistrationDto
             {
@@ -341,15 +355,18 @@ public class ProcessorTests: GenesisAppTestBase
         contractRegistrations[0].ContractCategory.ShouldBe(codeCheckRequiredEvent.Category);
         contractRegistrations[0].Code.ShouldBe(codeCheckRequiredEvent.Code.ToBase64());
         contractRegistrations[0].ContractType.ShouldBe(ContractType.UserContract);
-        contractRegistrations[0].ProposedContractInputHash.ShouldBe(codeCheckRequiredEvent.ProposedContractInputHash.ToHex());
-        contractRegistrations[0].CodeHash.ShouldBe(HashHelper.ComputeFrom(codeCheckRequiredEvent.Code.ToByteArray()).ToHex());
+        contractRegistrations[0].ProposedContractInputHash
+            .ShouldBe(codeCheckRequiredEvent.ProposedContractInputHash.ToHex());
+        contractRegistrations[0].CodeHash
+            .ShouldBe(HashHelper.ComputeFrom(codeCheckRequiredEvent.Code.ToByteArray()).ToHex());
         contractRegistrations[0].Metadata.ChainId.ShouldBe(logEventContext.ChainId);
 
         var contractProposeInfos = (await _contractProposeInfoRepository.GetQueryableAsync()).ToList();
         contractProposeInfos.Count.ShouldBe(1);
         contractProposeInfos[0].Proposer.ShouldBe(FromAddress);
-        contractProposeInfos[0].ProposedContractInputHash.ShouldBe(codeCheckRequiredEvent.ProposedContractInputHash.ToHex());
-        
+        contractProposeInfos[0].ProposedContractInputHash
+            .ShouldBe(codeCheckRequiredEvent.ProposedContractInputHash.ToHex());
+
         var contractDeployedEvent = new ContractDeployed
         {
             Address = TestAddress,
@@ -359,14 +376,15 @@ public class ProcessorTests: GenesisAppTestBase
             ContractVersion = "1.0.0",
             Version = 1
         };
-        
+
         logEventContext = GenerateLogEventContext(contractDeployedEvent);
         await _contractDeployedProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-    
+
         var contractInfoId = IdGenerateHelper.GetId(logEventContext.ChainId, contractDeployedEvent.Address.ToBase58());
-        var contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o=>o.Id==contractInfoId).ToList()[0];
+        var contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId)
+            .ToList()[0];
         contractInfo.Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractInfo.CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
         contractInfo.NameHash.ShouldBe(contractDeployedEvent.Name.ToHex());
@@ -377,11 +395,11 @@ public class ProcessorTests: GenesisAppTestBase
         contractInfo.ContractCategory.ShouldBe(codeCheckRequiredEvent.Category);
         contractInfo.ContractType.ShouldBe(ContractType.UserContract);
 
-        var contractInfos = await Query.ContractInfo(_contractInfoRepository, _objectMapper, new GetContractInfoDto
+        var contractInfos =  Query.ContractList(_contractInfoRepository, _objectMapper, new GetContractInfoDto
         {
             ChainId = ChainId,
             Address = TestAddress.ToBase58()
-        });
+        }).Result.Items;
         contractInfos.Count.ShouldBe(1);
         contractInfos[0].Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractInfos[0].CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
@@ -392,12 +410,13 @@ public class ProcessorTests: GenesisAppTestBase
         contractInfos[0].Metadata.ChainId.ShouldBe(logEventContext.ChainId);
         contractInfos[0].ContractCategory.ShouldBe(codeCheckRequiredEvent.Category);
         contractInfos[0].ContractType.ShouldBe(ContractType.UserContract);
-        
-        var contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper, new GetContractRecordDto
-        {
-            ChainId = ChainId,
-            Address = TestAddress.ToBase58()
-        });
+
+        var contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper,
+            new GetContractRecordDto
+            {
+                ChainId = ChainId,
+                Address = TestAddress.ToBase58()
+            });
         contractRecords.Count.ShouldBe(1);
         contractRecords[0].ContractInfo.Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractRecords[0].ContractInfo.CodeHash.ShouldBe(contractDeployedEvent.CodeHash.ToHex());
@@ -409,8 +428,8 @@ public class ProcessorTests: GenesisAppTestBase
         contractRecords[0].Operator.ShouldBe(FromAddress);
         contractRecords[0].TransactionId.ShouldBe(logEventContext.Transaction.TransactionId);
         contractRecords[0].OperationType.ShouldBe(ContractOperationType.DeployContract);
-        contractRecords[0].ContractInfo.Author.ShouldBe( contractInfos[0].Author);
-        
+        contractRecords[0].ContractInfo.Author.ShouldBe(contractInfos[0].Author);
+
         // Update contract
         var codeCheckRequiredEventUpdate = new CodeCheckRequired
         {
@@ -422,10 +441,11 @@ public class ProcessorTests: GenesisAppTestBase
         };
         logEventContext = GenerateLogEventContext(codeCheckRequiredEventUpdate);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-        
-        var contractUpdateRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
+
+        var contractUpdateRegistrations = await Query.ContractRegistration(_contractRegistrationRepository,
+            _objectMapper,
             new GetContractRegistrationDto
             {
                 ChainId = ChainId,
@@ -435,15 +455,18 @@ public class ProcessorTests: GenesisAppTestBase
         contractUpdateRegistrations[0].ContractCategory.ShouldBe(codeCheckRequiredEventUpdate.Category);
         contractUpdateRegistrations[0].Code.ShouldBe(codeCheckRequiredEventUpdate.Code.ToBase64());
         contractUpdateRegistrations[0].ContractType.ShouldBe(ContractType.UserContract);
-        contractUpdateRegistrations[0].ProposedContractInputHash.ShouldBe(codeCheckRequiredEventUpdate.ProposedContractInputHash.ToHex());
-        contractUpdateRegistrations[0].CodeHash.ShouldBe(HashHelper.ComputeFrom(codeCheckRequiredEventUpdate.Code.ToByteArray()).ToHex());
+        contractUpdateRegistrations[0].ProposedContractInputHash
+            .ShouldBe(codeCheckRequiredEventUpdate.ProposedContractInputHash.ToHex());
+        contractUpdateRegistrations[0].CodeHash
+            .ShouldBe(HashHelper.ComputeFrom(codeCheckRequiredEventUpdate.Code.ToByteArray()).ToHex());
         contractUpdateRegistrations[0].Metadata.ChainId.ShouldBe(logEventContext.ChainId);
-        
+
         contractProposeInfos = (await _contractProposeInfoRepository.GetQueryableAsync()).ToList();
         contractProposeInfos.Count.ShouldBe(2);
         contractProposeInfos[1].Proposer.ShouldBe(FromAddress);
-        contractProposeInfos[1].ProposedContractInputHash.ShouldBe(codeCheckRequiredEventUpdate.ProposedContractInputHash.ToHex());
-        
+        contractProposeInfos[1].ProposedContractInputHash
+            .ShouldBe(codeCheckRequiredEventUpdate.ProposedContractInputHash.ToHex());
+
         var codeUpdatedEvent = new CodeUpdated
         {
             Address = TestAddress,
@@ -452,13 +475,14 @@ public class ProcessorTests: GenesisAppTestBase
             ContractVersion = "1.1.0",
             Version = 2
         };
-        
+
         logEventContext = GenerateLogEventContext(codeUpdatedEvent);
         await _codeUpdatedProcessor.ProcessAsync(logEventContext);
-    
+
         await SaveDataAsync();
-        
-        contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o=>o.Id==contractInfoId).ToList()[0];
+
+        contractInfo =
+            (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId).ToList()[0];
         contractInfo.Address.ShouldBe(contractDeployedEvent.Address.ToBase58());
         contractInfo.CodeHash.ShouldBe(codeUpdatedEvent.NewCodeHash.ToHex());
         contractInfo.NameHash.ShouldBe(contractDeployedEvent.Name.ToHex());
@@ -468,7 +492,7 @@ public class ProcessorTests: GenesisAppTestBase
         contractInfo.Metadata.ChainId.ShouldBe(logEventContext.ChainId);
         contractInfo.ContractCategory.ShouldBe(codeCheckRequiredEvent.Category);
         contractInfo.ContractType.ShouldBe(ContractType.UserContract);
-        
+
         contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper, new GetContractRecordDto
         {
             ChainId = ChainId,
@@ -486,7 +510,7 @@ public class ProcessorTests: GenesisAppTestBase
         contractRecords[1].TransactionId.ShouldBe(logEventContext.Transaction.TransactionId);
         contractRecords[1].OperationType.ShouldBe(ContractOperationType.UpdateContract);
         contractRecords[1].ContractInfo.Author.ShouldBe(contractInfo.Author);
-        
+
         // Update author
         var authorUpdatedEvent = new AuthorUpdated
         {
@@ -496,12 +520,13 @@ public class ProcessorTests: GenesisAppTestBase
         };
         logEventContext = GenerateLogEventContext(authorUpdatedEvent);
         await _authorUpdatedProcessor.ProcessAsync(logEventContext);
-        
+
         await SaveDataAsync();
-        
-        contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o=>o.Id==contractInfoId).ToList()[0];
+
+        contractInfo =
+            (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId).ToList()[0];
         contractInfo.Author.ShouldBe(authorUpdatedEvent.NewAuthor.ToBase58());
-        
+
         contractRecords = await Query.ContractRecord(_contractRecordRepository, _objectMapper, new GetContractRecordDto
         {
             ChainId = ChainId,
