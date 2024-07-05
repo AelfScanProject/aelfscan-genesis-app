@@ -9,12 +9,12 @@ public class GetContractRegistrationDto
     {
         if (ChainId.IsNullOrWhiteSpace())
         {
-            throw new ArgumentException($"{nameof(ChainId)} is required.");
+            throw new ArgumentOutOfRangeException($"{nameof(ChainId)} is required.");
         }
         
         if (CodeHash.IsNullOrWhiteSpace())
         {
-            throw new ArgumentException($"{nameof(CodeHash)} is required.");
+            throw new ArgumentOutOfRangeException($"{nameof(CodeHash)} is required.");
         }
     }
 }

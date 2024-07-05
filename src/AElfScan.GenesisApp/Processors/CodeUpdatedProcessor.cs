@@ -1,3 +1,4 @@
+using AeFinder.Sdk.Logging;
 using AElfScan.GenesisApp.Entities;
 using AeFinder.Sdk.Processor;
 using AElf.Standards.ACS0;
@@ -11,14 +12,15 @@ public class CodeUpdatedProcessor : GenesisProcessorBase<CodeUpdated>
         var id = GetContractInfoId(context.ChainId, logEvent.Address);
 
         var contractInfo = await GetEntityAsync<Entities.ContractInfo>(id);
+        
         ObjectMapper.Map(logEvent, contractInfo);
         var contractRegistration =
             await GetEntityAsync<ContractRegistration>(
                 GetContractRegistrationId(context.ChainId, logEvent.NewCodeHash.ToHex()));
         ObjectMapper.Map(contractRegistration, contractInfo);
-        
+
         await SaveEntityAsync(contractInfo);
-        
+
         await AddRecordAsync(ContractOperationType.UpdateContract, contractInfo, context);
     }
 }
