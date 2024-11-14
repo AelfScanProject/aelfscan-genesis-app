@@ -7,7 +7,7 @@ namespace AElfScan.GenesisApp.GraphQL;
 
 public class Query
 {
-    public static async Task<ContractInfoResultDto> ContractList(
+    public virtual async Task<ContractInfoResultDto> ContractList(
         [FromServices] IReadOnlyRepository<Entities.ContractInfo> repository,
         [FromServices] IObjectMapper objectMapper, GetContractInfoDto input)
     {
@@ -85,7 +85,7 @@ public class Query
             queryable = queryable.Where(o => o.ContractInfo.Author == input.Author);
         }
 
-        var result = queryable.Skip(input.SkipCount)
+        var result = queryable.OrderByDescending(o => o.Metadata.Block.BlockTime).Skip(input.SkipCount)
             .Take(input.MaxResultCount).ToList();
 
         return objectMapper.Map<List<Entities.ContractRecord>, List<ContractRecordDto>>(result);
