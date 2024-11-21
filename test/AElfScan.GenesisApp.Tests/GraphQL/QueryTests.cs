@@ -84,7 +84,8 @@ public class QueryTests : GenesisAppTestBase
         {
             ChainId = ChainId,
             SkipCount = 0,
-            MaxResultCount = 10
+            MaxResultCount = 10,
+            BlockHeight = 10
         });
         contractInfo.Items.Count().ShouldBe(2);
         
