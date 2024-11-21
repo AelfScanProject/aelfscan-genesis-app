@@ -50,7 +50,6 @@ public class ProcessorTests : GenesisAppTestBase
         };
         var logEventContext = GenerateLogEventContext(contractProposedEvent);
         await _contractProposedProcessor.ProcessAsync(logEventContext);
-        await SaveDataAsync();
 
         var contractProposeInfos = (await _contractProposeInfoRepository.GetQueryableAsync()).ToList();
         contractProposeInfos.Count.ShouldBe(1);
@@ -69,7 +68,6 @@ public class ProcessorTests : GenesisAppTestBase
         logEventContext = GenerateLogEventContext(codeCheckRequiredEvent);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
 
-        await SaveDataAsync();
 
         var contractRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
             new GetContractRegistrationDto
@@ -100,7 +98,6 @@ public class ProcessorTests : GenesisAppTestBase
         logEventContext = GenerateLogEventContext(contractDeployedEvent);
         await _contractDeployedProcessor.ProcessAsync(logEventContext);
 
-        await SaveDataAsync();
 
         var contractInfoId = IdGenerateHelper.GetId(logEventContext.ChainId, contractDeployedEvent.Address.ToBase58());
         var contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId)
@@ -158,7 +155,6 @@ public class ProcessorTests : GenesisAppTestBase
         };
         logEventContext = GenerateLogEventContext(contractProposedEventUpdate);
         await _contractProposedProcessor.ProcessAsync(logEventContext);
-        await SaveDataAsync();
 
         contractProposeInfos = (await _contractProposeInfoRepository.GetQueryableAsync()).ToList();
         contractProposeInfos.Count.ShouldBe(2);
@@ -177,7 +173,6 @@ public class ProcessorTests : GenesisAppTestBase
         logEventContext = GenerateLogEventContext(codeCheckRequiredEventUpdate);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
 
-        await SaveDataAsync();
 
         contractRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
             new GetContractRegistrationDto
@@ -213,7 +208,6 @@ public class ProcessorTests : GenesisAppTestBase
         logEventContext = GenerateLogEventContext(codeUpdatedEvent);
         await _codeUpdatedProcessor.ProcessAsync(logEventContext);
 
-        await SaveDataAsync();
 
         contractInfo =
             (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId).ToList()[0];
@@ -264,7 +258,6 @@ public class ProcessorTests : GenesisAppTestBase
 
         await _contractDeployedProcessor.ProcessAsync(logEventContext);
 
-        await SaveDataAsync();
 
         var contractRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
             new GetContractRegistrationDto
@@ -343,7 +336,6 @@ public class ProcessorTests : GenesisAppTestBase
         var logEventContext = GenerateLogEventContext(codeCheckRequiredEvent);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
 
-        await SaveDataAsync();
 
         var contractRegistrations = await Query.ContractRegistration(_contractRegistrationRepository, _objectMapper,
             new GetContractRegistrationDto
@@ -379,8 +371,6 @@ public class ProcessorTests : GenesisAppTestBase
 
         logEventContext = GenerateLogEventContext(contractDeployedEvent);
         await _contractDeployedProcessor.ProcessAsync(logEventContext);
-
-        await SaveDataAsync();
 
         var contractInfoId = IdGenerateHelper.GetId(logEventContext.ChainId, contractDeployedEvent.Address.ToBase58());
         var contractInfo = (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId)
@@ -442,8 +432,6 @@ public class ProcessorTests : GenesisAppTestBase
         logEventContext = GenerateLogEventContext(codeCheckRequiredEventUpdate);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
 
-        await SaveDataAsync();
-
         var contractUpdateRegistrations = await Query.ContractRegistration(_contractRegistrationRepository,
             _objectMapper,
             new GetContractRegistrationDto
@@ -478,8 +466,6 @@ public class ProcessorTests : GenesisAppTestBase
 
         logEventContext = GenerateLogEventContext(codeUpdatedEvent);
         await _codeUpdatedProcessor.ProcessAsync(logEventContext);
-
-        await SaveDataAsync();
 
         contractInfo =
             (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId).ToList()[0];
@@ -520,8 +506,6 @@ public class ProcessorTests : GenesisAppTestBase
         };
         logEventContext = GenerateLogEventContext(authorUpdatedEvent);
         await _authorUpdatedProcessor.ProcessAsync(logEventContext);
-
-        await SaveDataAsync();
 
         contractInfo =
             (await _contractInfoRepository.GetQueryableAsync()).Where(o => o.Id == contractInfoId).ToList()[0];

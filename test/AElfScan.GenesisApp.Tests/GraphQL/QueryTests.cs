@@ -148,7 +148,6 @@ public class QueryTests : GenesisAppTestBase
         };
         var logEventContext = GenerateLogEventContext(contractProposedEvent);
         await _contractProposedProcessor.ProcessAsync(logEventContext);
-        await SaveDataAsync();
         
         var codeCheckRequiredEvent = new CodeCheckRequired
         {
@@ -160,7 +159,6 @@ public class QueryTests : GenesisAppTestBase
         };
         logEventContext = GenerateLogEventContext(codeCheckRequiredEvent);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
-        await SaveDataAsync();
         
         var contractDeployedEvent = new ContractDeployed
         {
@@ -174,7 +172,6 @@ public class QueryTests : GenesisAppTestBase
         
         logEventContext = GenerateLogEventContext(contractDeployedEvent);
         await _contractDeployedProcessor.ProcessAsync(logEventContext);
-        await SaveDataAsync();
     }
 
 }

@@ -7,7 +7,7 @@ namespace AElfScan.GenesisApp.GraphQL;
 
 public class Query
 {
-    public virtual async Task<ContractInfoResultDto> ContractList(
+    public static async Task<ContractInfoResultDto> ContractList(
         [FromServices] IReadOnlyRepository<Entities.ContractInfo> repository,
         [FromServices] IObjectMapper objectMapper, GetContractInfoDto input)
     {
