@@ -1,4 +1,3 @@
-using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using AeFinder.Sdk;
 using GraphQL;
@@ -49,7 +48,10 @@ public class Query
             var predicate = predicates.Aggregate((prev, next) => prev.Or(next));
             queryable = queryable.Where(predicate);
         }
-
+        if (input.BlockHeight!=null &&  input.BlockHeight> 0)
+        {
+            queryable = queryable.Where(o => o.Metadata.Block.BlockHeight >= input.BlockHeight);
+        }
 
         var contractInfoResultDto = new ContractInfoResultDto();
         contractInfoResultDto.TotalCount = queryable.Count();
@@ -83,7 +85,7 @@ public class Query
             queryable = queryable.Where(o => o.ContractInfo.Author == input.Author);
         }
 
-        var result = queryable.Skip(input.SkipCount)
+        var result = queryable.OrderByDescending(o => o.Metadata.Block.BlockTime).Skip(input.SkipCount)
             .Take(input.MaxResultCount).ToList();
 
         return objectMapper.Map<List<Entities.ContractRecord>, List<ContractRecordDto>>(result);

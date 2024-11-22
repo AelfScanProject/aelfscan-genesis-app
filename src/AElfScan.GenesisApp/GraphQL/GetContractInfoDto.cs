@@ -7,4 +7,6 @@ public class GetContractInfoDto : PagedResultQueryDto
 
     public List<string> AddressList { get; set; }
     public string Author { get; set; }
+    
+    public long? BlockHeight { get; set; }
 }

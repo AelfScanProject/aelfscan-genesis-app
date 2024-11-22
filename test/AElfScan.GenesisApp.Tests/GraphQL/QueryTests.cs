@@ -84,7 +84,8 @@ public class QueryTests : GenesisAppTestBase
         {
             ChainId = ChainId,
             SkipCount = 0,
-            MaxResultCount = 10
+            MaxResultCount = 10,
+            BlockHeight = 10
         });
         contractInfo.Items.Count().ShouldBe(2);
         
@@ -148,7 +149,6 @@ public class QueryTests : GenesisAppTestBase
         };
         var logEventContext = GenerateLogEventContext(contractProposedEvent);
         await _contractProposedProcessor.ProcessAsync(logEventContext);
-        await SaveDataAsync();
         
         var codeCheckRequiredEvent = new CodeCheckRequired
         {
@@ -160,7 +160,6 @@ public class QueryTests : GenesisAppTestBase
         };
         logEventContext = GenerateLogEventContext(codeCheckRequiredEvent);
         await _codeCheckRequiredProcessor.ProcessAsync(logEventContext);
-        await SaveDataAsync();
         
         var contractDeployedEvent = new ContractDeployed
         {
@@ -174,7 +173,6 @@ public class QueryTests : GenesisAppTestBase
         
         logEventContext = GenerateLogEventContext(contractDeployedEvent);
         await _contractDeployedProcessor.ProcessAsync(logEventContext);
-        await SaveDataAsync();
     }
 
 }
